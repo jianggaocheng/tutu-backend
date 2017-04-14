@@ -1,0 +1,43 @@
+{{#extend "layout"}}
+{{#content "head"}}
+<title>BOLANG | Login</title>
+<style>
+body{
+    background-color: #f3f3f4;
+}
+</style>
+{{/content}}
+{{#content "main" mode="append"}}
+<div class="middle-box text-center loginscreen animated fadeInDown">
+    <div>
+        <div>
+            <h1 class="logo-name">B+</h1>
+        </div>
+        <h3>Welcome to BOLANG+</h3>
+        <p>
+            勃朗智能家居管理平台
+        </p>
+        <p>
+            提供最优美的界面
+        </p>
+        <p>
+            提供最方便的管理方式
+        </p>
+        <form class="m-t" role="form" method="post" action="/login">
+            {{#if errMsg}}
+            <div class="alert alert-danger" role="alert">{{errMsg}}</div>
+            {{/if}}
+            <div class="form-group">
+                <input type="email" name="email" class="form-control" placeholder="请输入用户名" required="">
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="请输入密码" required="">
+            </div>
+            <button type="submit" class="btn btn-primary block full-width m-b">登录管理平台</button>
+
+        </form>
+        <p class="m-t"> <small>无锡勃朗电器有限责任公司  &copy; 2017</small> </p>
+    </div>
+</div>
+{{/content}}
+{{/extend}}
