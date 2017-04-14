@@ -23,7 +23,7 @@ module.exports = {
     },
 
     login: function(req, res, next) {
-        res.send(exb.templates.login({}));
+        res.send(tutu.templates.login({}));
     },
 
     logout: function(req, res, next) {
@@ -42,7 +42,7 @@ module.exports = {
 
         if (_.isEmpty(email) || _.isEmpty(pwd)) {
             result.errMsg = '用户名和密码不能为空';
-            res.send(exb.templates.login(result));
+            res.send(tutu.templates.login(result));
             return;
         }
 
@@ -83,7 +83,7 @@ module.exports = {
                 result.errMsg = '用户名或密码错误';
                 res.clearCookie('email');
                 res.clearCookie('password');
-                res.send(exb.templates.login(result));
+                res.send(tutu.templates.login(result));
             }
         });
     },

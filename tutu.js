@@ -68,6 +68,10 @@ class Tutu {
                     console.log('Address in use. Is the server already running?'.red);
                 }
             });
+
+            if (options.callback) {
+                options.callback(th);
+            }
         });
     }
 }
