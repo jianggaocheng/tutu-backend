@@ -10,7 +10,9 @@ const layouts = require('handlebars-layouts');
 
 var conncetDatabase = function(tutu, callback) {
     orm.connect(tutu.config.database, function(err, db) {
-        if (err) return callback(err);
+        if (err) {
+            return callback(err);
+        }
         db.settings.set("instance.returnAllErrors", true);
         db.settings.set("instance.autoFetch", true);
         db.settings.set("instance.autoFetchLimit", 2);
@@ -27,6 +29,13 @@ var defineDataModels = function(tutu, appList, results, callback) {
     }, function(err) {
         tutu.models = tutu.db.models;
         callback(err);
+    });
+};
+
+var syncDatabase = function(results, callback) {
+    results.connectDatabase.sync(function() {
+        console.log(("Database synced").green);
+        callback(null);
     });
 };
 
@@ -56,7 +65,8 @@ class Tutu {
         async.auto({
             connectDatabase: async.apply(conncetDatabase, th),
             defineDataModels: ['connectDatabase', async.apply(defineDataModels, th, appList)],
-        }, function(err, results) {
+            syncDatabase: ['connectDatabase', 'defineDataModels', syncDatabase],
+        }, function(err) {
             if (err) {
                 console.log('Err', err);
             }

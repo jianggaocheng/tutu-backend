@@ -52,7 +52,9 @@ module.exports = {
         };
 
         tutu.models.adminUser.find(si).all(function(err, userList) {
-            if (err) return next(err);
+            if (err) {
+                return next(err);
+            }
 
             if (userList && userList.length === 1) {
                 // login success

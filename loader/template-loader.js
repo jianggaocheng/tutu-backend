@@ -1,7 +1,6 @@
 const TutuLoader = require('./index');
 const path = require('path');
 const fs = require('fs');
-const async = require('async');
 const handlebars = require('handlebars');
 const _ = require('lodash');
 

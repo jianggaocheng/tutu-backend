@@ -1,5 +1,4 @@
 const TutuLoader = require('./index');
-const Tutu = require('../tutu');
 const path = require('path');
 
 class TutuConfigLoader extends TutuLoader {

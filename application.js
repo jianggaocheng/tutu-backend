@@ -1,5 +1,3 @@
-const express = require('express');
-const async = require('async');
 const path = require('path');
 const fs = require('fs');
 const TutuConfigLoader = require('./loader/config-loader');
@@ -19,12 +17,13 @@ class TuTuApp {
         tutu.config = Object.assign(tutu.config || {}, this.configLoader.load());
         this.modelLoader.load();
         this.templateLoader.load(tutu);
+        var loadFileArray = [];
 
         // load middleware
         var middlewarePath = path.join(this.options.appPath, 'middleware');
 
         if (fs.existsSync(middlewarePath)) {
-            var loadFileArray = fs.readdirSync(middlewarePath);
+            loadFileArray = fs.readdirSync(middlewarePath);
             loadFileArray.forEach(function(filename) {
                 // prevent '.DStore' file in MAC os
                 if (path.extname(filename) == '.js') {
@@ -46,7 +45,7 @@ class TuTuApp {
         // load helpers
         var helperPath = path.join(this.options.appPath, 'helper');
         if (fs.existsSync(helperPath)) {
-            var loadFileArray = fs.readdirSync(helperPath);
+            loadFileArray = fs.readdirSync(helperPath);
             loadFileArray.forEach(function(filename) {
                 // prevent '.DStore' file in MAC os
                 if (path.extname(filename) == '.js') {
