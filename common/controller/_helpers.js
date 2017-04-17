@@ -7,15 +7,12 @@ module.exports = {
         return function(callback) {
             var parentMenu = cache.get('menuList' + req.session.user.roleId);
             if (parentMenu) {
-                console.log('getMenuList from cache');
                 return callback(null, parentMenu);
             }
 
             var si = {
                 roleId: req.session.user.roleId,
             };
-
-            console.log('req.originalUrl', req.path);
 
             tutu.models.roleMenu.find(si)
                 .run(function(err, list) {
@@ -49,7 +46,6 @@ module.exports = {
                             }
                         });
 
-                        console.log('getMenuList from db');
                         cache.put('menuList' + req.session.user.roleId, parentMenu, 300 * 1000);
 
                         callback(null, parentMenu);

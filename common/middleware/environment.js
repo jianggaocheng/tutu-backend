@@ -1,23 +1,23 @@
 var express = require('express');
 var session = require('express-session');
-var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var device = require('express-device');
 var fingerprint = require('express-fingerprint');
 var path = require('path');
+var log4js = require('log4js');
 
 module.exports = app => {
     app.use('/upload', express.static('../upload'));
     app.use('/backup', express.static('../backup'));
     app.use('/docs', express.static('../docs'));
-    app.use(logger('dev'));
+    app.use(log4js.connectLogger(log4js.getLogger('tutu'), { level: 'debug', format: ':remote-addr :method :url :status :res[Content-Length] bytes :response-time ms', nolog: '\\.gif|\\.jp?g|\\.png|\\.css|\\.js|\\.woff|\\.woff2$' }));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(session({
         resave: false,
         saveUninitialized: false,
-        secret: 'express-backend'
+        secret: 'tutu-backend'
     }));
     app.use(cookieParser());
 

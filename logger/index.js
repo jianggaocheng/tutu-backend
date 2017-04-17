@@ -1,4 +1,10 @@
-const CCLabConsoleLogger = require('./console-logger.js');
-module.exports = {
-    CCLabConsoleLogger,
-};
+class TutuLogger {
+    constructor() {
+
+    }
+    log() {
+        console.log(arguments);
+    }
+}
+
+module.exports = TutuLogger;

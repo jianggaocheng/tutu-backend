@@ -39,9 +39,6 @@ module.exports = {
             req.renderData = { modelName: modelName, displayModelName: model.displayName ? model.displayName : modelName };
             return next();
         } else {
-            // query data
-            console.log('COMMON LIST:', modelName);
-
             // var cacheKey = 'list' + modelName;
             // if (cache.get(cacheKey)) {
             //     console.log('Get ' + modelName + ' from cache');
@@ -50,8 +47,6 @@ module.exports = {
 
             // TODO: server side coding
             var parsedRequest = datatableParser(req.query);
-
-            console.log('parsedRequest:', parsedRequest);
 
             // Set where condition
             var si = {};

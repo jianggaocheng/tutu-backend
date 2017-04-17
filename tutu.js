@@ -1,5 +1,6 @@
 const TutuApp = require('./application');
-const TutuConfigLoader = require('./loader/config-loader');
+const TutuLogger4js = require('./logger/logger4js');
+
 const commonAppPath = './common';
 const path = require('path');
 const express = require('express');
@@ -45,6 +46,9 @@ class Tutu {
         th.app = express();
         th.libPath = __dirname;
         th.options = options;
+
+        // Start logger
+        th.logger = new TutuLogger4js();
 
         // Register helpers 
         handlebars.registerHelper(layouts(handlebars));

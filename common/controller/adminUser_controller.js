@@ -34,7 +34,6 @@ module.exports = {
     },
 
     doLogin: function(req, res, next) {
-        console.dir(req.body);
         var email = req.body.email;
         var pwd = req.body.password;
 
@@ -73,6 +72,7 @@ module.exports = {
                 delete user.password;
                 req.session.user = user;
                 console.log('LOGIN:', user);
+                tutu.logger.log('', 'LOGIN', user.role.roleName, user.userId, user.email);
 
                 if (req.originalUrl.indexOf('admin') != -1) {
                     console.log('redirect to original');

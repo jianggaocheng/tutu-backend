@@ -12,7 +12,6 @@ module.exports = {
         var bkfiles = fs.readdirSync(backupPath); //需要用到同步读取
         async.each(bkfiles, function(file, callback) {
             var states = fs.statSync(backupPath + file);
-            console.dir(states);
             if (states.isDirectory()) {} else {
                 //创建一个对象保存信息
                 var obj = {};
@@ -25,6 +24,7 @@ module.exports = {
         }, function(err) {
             if (err) {
                 console.dir(err);
+                tutu.logger.error(err);
             }
 
             req.template = 'system.backupDB';
@@ -46,7 +46,11 @@ module.exports = {
             dest: '../backup/' + fileName + '.sql' // destination file 
         }, function(err) {
             // create data.sql file; 
-            console.dir(err);
+            if (err) {
+                console.dir(err);
+                tutu.logger.error(err);
+            }
+
             res.redirect('/backup/' + fileName + '.sql');
         });
     },
