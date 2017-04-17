@@ -130,8 +130,10 @@ $(document).ready(function() {
         });
 
         $('#dynamic-table').on('click', 'tbody tr', function(e) {
-            console.dir(jqTable.row(this).data());
-            $(this).toggleClass("selected");
+            var id = this.id;
+            console.log(id);
+            // console.dir(jqTable.row(this).data());
+            // $(this).toggleClass("selected");
         });
     }
 });

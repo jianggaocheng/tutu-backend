@@ -1,6 +1,4 @@
-{{#extend "layout"}}
- 
-{{#content "head"}}
+{{#extend "layout"}} {{#content "head"}}
 <title>勃朗智能家居管理平台</title>
 
 <meta name="description" content="勃朗智能家居管理平台" />
@@ -15,10 +13,7 @@
 
 <link href="/public/css/plugins/dataTables/datatables.min.css" rel="stylesheet">
 <link href="/public/css/latofonts.css" rel="stylesheet">
-<link href="/public/css/latostyle.css" rel="stylesheet">
-{{/content}} 
-
-{{#content "main" mode="append"}}
+<link href="/public/css/latostyle.css" rel="stylesheet"> {{/content}} {{#content "main" mode="append"}}
 <div id="wrapper">
     {{> components/sidebar.html}}
     <div id="page-wrapper" class="gray-bg dashbard-1">
@@ -39,9 +34,7 @@
         {{> content }}
     </div>
 </div>
-{{/content}}
-
-{{#content "foot"}}
+{{/content}} {{#content "foot"}}
 <script src="/public/js/plugins/metisMenu/jquery.metisMenu.js"></script>
 <script src="/public/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 
@@ -79,6 +72,4 @@
 
 <script src="/public/js/plugins/dataTables/datatables.min.js"></script>
 <script src="/public/js/lodash.js"></script>
-{{/content}}
-
-{{/extend}}
+{{/content}} {{/extend}}
