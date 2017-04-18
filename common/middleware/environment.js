@@ -8,9 +8,7 @@ var path = require('path');
 var log4js = require('log4js');
 
 module.exports = app => {
-    app.use('/upload', express.static('../upload'));
-    app.use('/backup', express.static('../backup'));
-    app.use('/docs', express.static('../docs'));
+
     app.use(log4js.connectLogger(log4js.getLogger('tutu'), { level: 'debug', format: ':remote-addr :method :url :status :res[Content-Length] bytes :response-time ms', nolog: '\\.gif|\\.jp?g|\\.png|\\.css|\\.js|\\.woff|\\.woff2$' }));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));

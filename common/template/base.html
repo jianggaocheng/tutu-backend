@@ -72,4 +72,21 @@
 
 <script src="/public/js/plugins/dataTables/datatables.min.js"></script>
 <script src="/public/js/lodash.js"></script>
+
+<!-- Tutu  -->
+<script src="/public/js/tutu.js"></script>
+
+{{#afterLogin}}
+$(document).ready(function() {
+    setTimeout(function() {
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            showMethod: 'slideDown',
+            timeOut: 4000
+        };
+        toastr.success('Responsive Admin Theme', '欢迎登陆 {{session.user.name}}');
+    }, 1300);
+});
+{{/afterLogin}}
 {{/content}} {{/extend}}

@@ -1,6 +1,7 @@
 var helpers = require('./_helpers');
 var _ = require('lodash');
 var uuid = require('uuid');
+var moment = require('moment');
 
 module.exports = {
     /**
@@ -65,10 +66,12 @@ module.exports = {
                 res.cookie('password', pwd, { expires: expireDate });
 
                 var user = _.cloneDeep(userList[0]);
+                user.lastLoginString = moment(user.lastLogin).format('YYYY-MM-DD HH:mm:ss');
                 userList[0].lastLogin = new Date();
                 userList[0].save();
 
                 user.password = null;
+
                 delete user.password;
                 req.session.user = user;
                 console.log('LOGIN:', user);

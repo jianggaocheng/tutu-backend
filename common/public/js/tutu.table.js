@@ -118,7 +118,13 @@ $(document).ready(function() {
             ajax: $.fn.dataTable.pipeline({
                 url: '/admin/' + jqTable.data('modelName') + '/list',
                 pages: 5 // number of pages to cache
-            })
+            }),
+            "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+                // Bind click event
+                $(nRow).click(function() {
+                    $('#dynamic-table').trigger('row.click', [aData]);
+                });
+            }
         };
         $.ajax({
             type: 'GET',
@@ -129,9 +135,8 @@ $(document).ready(function() {
             }
         });
 
-        $('#dynamic-table').on('click', 'tbody tr', function(e) {
-            var id = this.id;
-            console.log(id);
+        $('#dynamic-table').on('row.click', function(e, data) {
+            console.log(data);
             // console.dir(jqTable.row(this).data());
             // $(this).toggleClass("selected");
         });
