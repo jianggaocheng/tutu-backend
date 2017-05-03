@@ -1,5 +1,8 @@
 const TutuLoader = require('./index');
 const path = require('path');
+const _ = require('lodash');
+const fs = require('fs');
+
 
 class TutuConfigLoader extends TutuLoader {
     constructor(options) {
@@ -9,8 +12,15 @@ class TutuConfigLoader extends TutuLoader {
     load() {
         var configPath = this.configPath;
 
-        configPath = path.join(configPath, 'config.default');
-        var config = require(configPath);
+        var requireConfigPath = path.join(configPath, 'config.default');
+        var config = require(requireConfigPath);
+
+        if (!_.isEmpty(process.env.NODE_ENV)) {
+            requireConfigPath = path.join(configPath, 'config.' + process.env.NODE_ENV);
+            if (fs.existsSync(requireConfigPath)) {
+                _.merge(config, require(requireConfigPath));
+            }
+        }
         return config;
     }
 }

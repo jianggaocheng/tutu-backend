@@ -38,7 +38,6 @@ module.exports = function(orm, db) {
             { data: 'userId', title: '用户ID' },
             { data: 'name', title: '姓名' },
             { data: 'phone', title: '联系方式' },
-            { data: 'email', title: '电子邮件' },
             { data: 'regDate', title: '注册时间' },
             { data: 'lastLogin', title: '最后登录' }
         ]
