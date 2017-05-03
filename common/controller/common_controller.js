@@ -11,6 +11,28 @@ var datatableParser = require('datatable-parser');
 
 module.exports = {
     /**
+     * Bind ws uuid with session
+     */
+    bindWebsocketUUID: function(req, res, next) {
+        var uuid = req.body.uuid;
+        req.session.wsUUID = uuid;
+
+        // send ws message 
+        var user = req.session.user;
+        if (user.greeting !== true) {
+            var toastData = {
+                title: '欢迎登陆 ' + user.name,
+                content: '上次登录: ' + moment(user.lastLogin).format('YYYY-MM-DD HH:mm:ss')
+            };
+
+            tutu.ws.sendMsg(req.session.wsUUID, 'toast', toastData);
+            user.greeting = true;
+        }
+
+        return res.json({ code: 200 });
+    },
+
+    /**
      * Common hander for get column info query(from jquery.datatable)
      */
     commonAdminListColumns: function(req, res, next) {
@@ -36,7 +58,12 @@ module.exports = {
                 req.template = 'common.list';
             }
 
-            req.renderData = { modelName: modelName, displayModelName: model.displayName ? model.displayName : modelName };
+            req.renderData = {
+                modelName: modelName,
+                displayModelName: model.displayName ? model.displayName : modelName,
+                adminOperation: model.adminAdd,
+                adminAdd: model.adminAdd,
+            };
             return next();
         } else {
             // var cacheKey = 'list' + modelName;
@@ -117,10 +144,121 @@ module.exports = {
     },
 
     /**
-     * Common hander for background edit
+     * Common render hander for backend edit
+     */
+    commonAdminEditRender: function(req, res, next) {
+        // TODO: fill the function
+        var modelName = req.params.modelName;
+        var model = tutu.models[modelName];
+
+        // render page content
+        if (tutu.templates[modelName + '.edit']) {
+            req.template = modelName + '.edit';
+        } else {
+            return res.json({
+                errCode: 404,
+                errMsg: 'Template不存在',
+            });
+        }
+
+        // merge render data
+        var renderFunc = function(data) {
+            req.renderData = {
+                modelName: modelName,
+                displayModelName: model.displayName ? model.displayName : modelName,
+            };
+
+            if (data) {
+                _.merge(req.renderData, data);
+            }
+
+            res.send(tutu.templates[req.template](req.renderData));
+        };
+
+
+        if (req.params.id) {
+            model.find({ id: req.params.id }).one(function(err, item) {
+                if (err) {
+                    tutu.logger.error(err);
+                    return res.json(err);
+                }
+
+                renderFunc(item);
+            });
+        } else {
+            renderFunc();
+        }
+    },
+
+    /**
+     * Common render hander for backend edit
      */
     commonAdminEdit: function(req, res, next) {
-        // TODO: fill the function
+        var modelName = req.params.modelName;
+        var model = tutu.models[modelName];
+        var newEntity = _.cloneDeep(req.body);
+
+        tutu.logger.debug('commonAdminEdit', newEntity, req.params.id);
+
+        // Judge the operation (edit or create)
+        if (req.params.id) {
+            model.find({ id: req.params.id }).one(function(err, originEntity) {
+                if (err) {
+                    tutu.logger.error(err);
+                    return res.json({ errMsg: err[0].msg });
+                }
+
+                for (var i in newEntity) {
+                    originEntity[i] = newEntity[i];
+                }
+
+                originEntity.save(function(err) {
+                    if (err) {
+                        return res.json({ errMsg: err[0].msg });
+                    }
+
+                    return res.json({ code: 200, data: originEntity });
+                });
+            });
+        } else {
+            _.forIn(newEntity, function(value, key) {
+                if (_.isEmpty(value)) {
+                    delete newEntity[key];
+                }
+            });
+
+            model.create(newEntity, function(err, item) {
+                if (err) {
+                    tutu.logger.error(err);
+                    return res.json({ errMsg: err[0].msg });
+                }
+                return res.json({ code: 200, data: item });
+            });
+
+        }
+    },
+
+    /**
+     * Common logic for backend delete
+     */
+    commonAdminDelete: function(req, res, next) {
+        var modelName = req.params.modelName;
+        var model = tutu.models[modelName];
+        var id = req.body.id;
+
+        var si = {
+            id: id
+        };
+        model.find(si).remove(function(err) {
+            if (err) {
+                return next(err);
+            }
+
+            return res.json({
+                code: 200
+            });
+        });
+
     },
 
     /**
@@ -153,8 +291,10 @@ module.exports = {
                 }
             });
 
-            handlebars.registerPartial('content', tutu.templates[req.template]);
-            res.send(tutu.templates.base(renderData));
+            if (req.template) {
+                handlebars.registerPartial('content', tutu.templates[req.template]);
+                res.send(tutu.templates.base(renderData));
+            }
         });
     },
 };

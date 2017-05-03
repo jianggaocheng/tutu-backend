@@ -66,7 +66,6 @@ module.exports = {
                 res.cookie('password', pwd, { expires: expireDate });
 
                 var user = _.cloneDeep(userList[0]);
-                user.lastLoginString = moment(user.lastLogin).format('YYYY-MM-DD HH:mm:ss');
                 userList[0].lastLogin = new Date();
                 userList[0].save();
 
@@ -76,6 +75,7 @@ module.exports = {
                 req.session.user = user;
                 console.log('LOGIN:', user);
                 tutu.logger.log('', 'LOGIN', user.role.roleName, user.userId, user.email);
+
 
                 if (req.originalUrl.indexOf('admin') != -1) {
                     console.log('redirect to original');

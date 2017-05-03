@@ -3,4 +3,5 @@ module.exports = function(orm, db) {
         roleId: { type: 'text', required: true },
         menuId: { type: 'text', required: true },
     });
+    roleMenu.adminDelete = true;
 };

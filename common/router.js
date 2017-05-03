@@ -14,7 +14,11 @@ module.exports = app => {
 
     app.get('/admin/:modelName/list', controllers.common.commonAdminList);
     app.get('/admin/:modelName/listColumns', controllers.common.commonAdminListColumns);
-    app.get('/admin/:modelName/edit/:id', controllers.common.commonAdminEdit);
+    app.get('/admin/:modelName/edit/:id?', controllers.common.commonAdminEditRender);
+    app.post('/admin/:modelName/edit/:id?', controllers.common.commonAdminEdit);
+    app.post('/admin/:modelName/delete', controllers.common.commonAdminDelete);
+    app.post('/admin/bindWebsocketUUID', controllers.common.bindWebsocketUUID);
+
     app.get('/admin/system/db', controllers.system.backupDB);
     app.post('/admin/system/doBackupDB', controllers.system.doBackupDB);
     app.get('/admin/log/showMonthConnectLog', controllers.log.showMonthConnectLog);

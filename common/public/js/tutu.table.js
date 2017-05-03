@@ -100,7 +100,7 @@ $(document).ready(function() {
 
                 drawCallback(json);
             }
-        }
+        };
     };
 
     // Register an API method that will empty the pipelined data, forcing an Ajax
@@ -121,7 +121,11 @@ $(document).ready(function() {
             }),
             "fnRowCallback": function(nRow, aData, iDisplayIndex) {
                 // Bind click event
-                $(nRow).click(function() {
+                $(nRow).find('.remove').click(function(e) {
+                    $('#dynamic-table').trigger('row.remove', [aData]);
+                    e.stopPropagation();
+                });
+                $(nRow).click(function(e) {
                     $('#dynamic-table').trigger('row.click', [aData]);
                 });
             }
@@ -130,15 +134,50 @@ $(document).ready(function() {
             type: 'GET',
             url: '/admin/' + jqTable.data('modelName') + '/listColumns',
             success: function(result) {
-                jqTable
-                    .dataTable(_.merge(defaultSettings, result));
+                tutu.table = jqTable
+                    .DataTable(_.merge(defaultSettings, result));
+                tutu.table.autoRefresh = setInterval(function() {
+                    tutu.table.clearPipeline();
+                    tutu.table.ajax.reload();
+                }, 10000);
             }
         });
 
+        $('#dynamic-table').on('row.remove', function(e, data) {
+            swal({
+                title: "是否确定?",
+                text: "将要删除此条数据 : " + data.id,
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: '取消',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "是的，请删除它!",
+                closeOnConfirm: false
+            }, function() {
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        id: data.id
+                    },
+                    url: '/admin/' + jqTable.data('modelName') + '/delete',
+                    success: function(result) {
+                        if (result.code == 200) {
+                            swal("操作成功!", null, "success");
+                            tutu.table.clearPipeline();
+                            tutu.table.ajax.reload();
+                        } else {
+                            swal("发生错误!", null, "error");
+                        }
+                    }
+                });
+
+            });
+        });
+
         $('#dynamic-table').on('row.click', function(e, data) {
-            console.log(data);
-            // console.dir(jqTable.row(this).data());
-            // $(this).toggleClass("selected");
+            $('#createModal').load('/admin/' + jqTable.data('modelName') + '/edit/' + data.id, function() {
+                $('#createModal').modal();
+            });
         });
     }
 });
