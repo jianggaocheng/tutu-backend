@@ -17,8 +17,8 @@ class TutuConfigLoader extends TutuLoader {
 
         if (!_.isEmpty(process.env.NODE_ENV)) {
             requireConfigPath = path.join(configPath, 'config.' + process.env.NODE_ENV);
-            if (fs.existsSync(requireConfigPath)) {
-                _.merge(config, require(requireConfigPath));
+            if (fs.existsSync(requireConfigPath + '.js')) {
+                config = _.merge(config, require(requireConfigPath));
             }
         }
         return config;
