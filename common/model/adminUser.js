@@ -5,7 +5,6 @@ module.exports = function(orm, db) {
         pwd: { type: 'text', required: true },
         name: { type: 'text' },
         email: { type: 'text' },
-        roleId: { type: 'text', required: true },
         lastLogin: { type: 'date', time: true },
     });
 

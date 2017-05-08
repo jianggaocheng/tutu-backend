@@ -49,6 +49,10 @@ module.exports = {
         var modelName = req.params.modelName;
         var model = tutu.models[modelName];
 
+        if (!model) {
+            return res.send(tutu.templates[404]());
+        }
+
         // Judge it's a page render query or get page data query
         if (_.isEmpty(req.query)) {
             // render page content
@@ -290,6 +294,11 @@ module.exports = {
                     }
                 }
             });
+
+            // Merge renderdata from config
+            if (tutu.config.siteInfo) {
+                renderData = _.merge(renderData, tutu.config.siteInfo);
+            }
 
             if (req.template) {
                 handlebars.registerPartial('content', tutu.templates[req.template]);

@@ -42,6 +42,11 @@ var syncDatabase = function(results, callback) {
     });
 };
 
+var initData = function(results, callback) {
+    // TODO: init data
+    callback(null);
+};
+
 class Tutu {
     constructor(options) {
         var th = this;
@@ -72,6 +77,7 @@ class Tutu {
             connectDatabase: async.apply(conncetDatabase, th),
             defineDataModels: ['connectDatabase', async.apply(defineDataModels, th, appList)],
             syncDatabase: ['connectDatabase', 'defineDataModels', syncDatabase],
+            initData: ['syncDatabase', initData],
         }, function(err) {
             if (err) {
                 th.logger.error('Err', err);
@@ -81,58 +87,61 @@ class Tutu {
             th.app.listen(th.config.port, function() {
                 console.log(("Listening on port " + th.config.port).green);
 
-                tutu.ws = {};
+                // enable web socket
+                if (th.config.wsPort) {
+                    tutu.ws = {};
 
-                tutu.ws.sendMsg = function(uuid, topic, data) {
-                    try {
-                        th.logger.debug('Websocket send:', uuid, topic, JSON.stringify(data));
-                        var sendData = {
-                            topic: topic,
-                            payload: data
-                        };
+                    tutu.ws.sendMsg = function(uuid, topic, data) {
+                        try {
+                            th.logger.debug('Websocket send:', uuid, topic, JSON.stringify(data));
+                            var sendData = {
+                                topic: topic,
+                                payload: data
+                            };
 
-                        if (th.ws.clientList[uuid]) {
-                            th.ws.clientList[uuid].send(JSON.stringify(sendData));
-                        } else {
-                            th.logger.error('Get ws client failed', uuid);
+                            if (th.ws.clientList[uuid]) {
+                                th.ws.clientList[uuid].send(JSON.stringify(sendData));
+                            } else {
+                                th.logger.error('Get ws client failed', uuid);
+                            }
+
+                        } catch (e) {
+                            th.logger.error('Websocket error:', e);
                         }
 
-                    } catch (e) {
-                        th.logger.error('Websocket error:', e);
-                    }
+                    };
+                    tutu.ws.clientList = {};
 
-                };
-                tutu.ws.clientList = {};
+                    // EventEmitter 
+                    th.eventEmitter = new EventEmitter();
 
-                // EventEmitter 
-                th.eventEmitter = new EventEmitter();
-
-                const wss = new WebSocket.Server({
-                    perMessageDeflate: false,
-                    port: th.config.wsPort
-                });
-
-                wss.on('connection', function connection(ws) {
-                    ws.uuid = uuid.v4();
-                    th.logger.debug('Websocket connect', ws.uuid);
-                    tutu.ws.clientList[ws.uuid] = ws;
-                    ws.on('message', function incoming(message) {
-                        th.logger.debug('Websocket message', message);
+                    const wss = new WebSocket.Server({
+                        perMessageDeflate: false,
+                        port: th.config.wsPort
                     });
 
-                    ws.send(JSON.stringify({
-                        topic: 'bind',
-                        payload: {
-                            uuid: ws.uuid
-                        }
-                    }));
+                    wss.on('connection', function connection(ws) {
+                        ws.uuid = uuid.v4();
+                        th.logger.debug('Websocket connect', ws.uuid);
+                        tutu.ws.clientList[ws.uuid] = ws;
+                        ws.on('message', function incoming(message) {
+                            th.logger.debug('Websocket message', message);
+                        });
 
-                    ws.on('close', function(e) {
-                        th.logger.debug('Websocket close', ws.uuid);
-                        tutu.ws.clientList[ws.uuid] = null;
+                        ws.send(JSON.stringify({
+                            topic: 'bind',
+                            payload: {
+                                uuid: ws.uuid
+                            }
+                        }));
+
+                        ws.on('close', function(e) {
+                            th.logger.debug('Websocket close', ws.uuid);
+                            tutu.ws.clientList[ws.uuid] = null;
+                        });
                     });
-                });
-                console.log(("Listening on websocket port " + th.config.wsPort).green);
+                    console.log(("Listening on websocket port " + th.config.wsPort).green);
+                }
             }).on('error', function(e) {
                 if (e.code == 'EADDRINUSE') {
                     console.log('Address in use. Is the server already running?'.red);

@@ -27,6 +27,7 @@ class TutuModelLoader extends TutuLoader {
 
     define(db) {
         var th = this;
+
         _.each(th.modelFileArray, function(fileName) {
             var modelRelativePath = path.relative(__dirname, path.join(th.modelPath, fileName));
             require(modelRelativePath)(orm, db);
