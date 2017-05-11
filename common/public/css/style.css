@@ -905,6 +905,18 @@ fieldset[disabled] .btn-info.active {
     border-color: #26d7d9;
 }
 
+.btn-dirty {
+    color: white;
+    background: #444;
+    border: 1px solid #444;
+}
+
+.btn-dirty:hover {
+    color: white;
+    background: #555;
+    border: 1px solid #555;
+}
+
 .btn-default {
     color: inherit;
     background: white;

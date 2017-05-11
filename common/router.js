@@ -23,8 +23,7 @@ module.exports = app => {
     app.post('/admin/system/doBackupDB', controllers.system.doBackupDB);
     app.get('/admin/log/showMonthConnectLog', controllers.log.showMonthConnectLog);
 
-    // Admin page render. should always be the last one item
-    app.get('/admin/*', controllers.common.baseRender);
+
 
     console.log('Common routes init'.green);
 };

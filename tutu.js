@@ -73,6 +73,9 @@ class Tutu {
             appList.push(customerApp);
         }
 
+        // TODO: Admin page render. should always be the last one item
+        th.app.get('/admin/*', th.controller.common.baseRender);
+
         async.auto({
             connectDatabase: async.apply(conncetDatabase, th),
             defineDataModels: ['connectDatabase', async.apply(defineDataModels, th, appList)],

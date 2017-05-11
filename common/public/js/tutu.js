@@ -54,5 +54,5 @@ $(function() {
         });
     });
 
-
+    $('.chosen-select').chosen({});
 });
