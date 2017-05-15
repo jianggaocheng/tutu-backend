@@ -75,6 +75,9 @@ class Tutu {
 
         // TODO: Admin page render. should always be the last one item
         th.app.get('/admin/*', th.controller.common.baseRender);
+        th.app.use(function(err, req, res, next) {
+            th.logger.error('错误处理中间件:', err);
+        });
 
         async.auto({
             connectDatabase: async.apply(conncetDatabase, th),

@@ -32,7 +32,8 @@ module.exports = {
                     tutu.models.menu.find(menuSi).order('sort').run(function(err, allMenuOfUser) {
                         // build menu structsß
                         if (err) {
-                            helpers.GlobalErrorHandler(err);
+                            tutu.logger.error(err);
+                            callback(err);
                         }
 
                         var parentMenu = _.filter(allMenuOfUser, { 'parentId': null });
