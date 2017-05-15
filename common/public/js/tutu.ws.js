@@ -3,7 +3,7 @@ var socket;
 tutu.ws = {
     connect: function() {
         try {
-            socket = new WebSocket('ws://127.0.0.1:3110');
+            socket = new WebSocket(tutu.config.wsPort);
         } catch (e) {
             console.log('Error:', e);
             return;

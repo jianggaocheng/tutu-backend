@@ -168,12 +168,18 @@ module.exports = {
         // merge render data
         var renderFunc = function(data) {
             req.renderData = {
-                modelName: modelName,
+                editModelName: modelName,
                 displayModelName: model.displayName ? model.displayName : modelName,
             };
 
             if (data) {
+                if (data.modelName) {
+                    data.deviceModelName = data.modelName;
+                    delete data.modelName;
+                }
+
                 _.merge(req.renderData, data);
+                req.renderData.modelName = req.params.modelName;
             }
 
             res.send(tutu.templates[req.template](req.renderData));
@@ -204,41 +210,45 @@ module.exports = {
 
         tutu.logger.debug('commonAdminEdit', newEntity, req.params.id);
 
-        // Judge the operation (edit or create)
-        if (req.params.id) {
-            model.find({ id: req.params.id }).one(function(err, originEntity) {
-                if (err) {
-                    tutu.logger.error(err);
-                    return res.json({ errMsg: err[0].msg });
-                }
-
-                for (var i in newEntity) {
-                    originEntity[i] = newEntity[i];
-                }
-
-                originEntity.save(function(err) {
+        try {
+            // Judge the operation (edit or create)
+            if (req.params.id) {
+                model.find({ id: req.params.id }).one(function(err, originEntity) {
                     if (err) {
+                        tutu.logger.error(err);
                         return res.json({ errMsg: err[0].msg });
                     }
 
-                    return res.json({ code: 200, data: originEntity });
+                    for (var i in newEntity) {
+                        originEntity[i] = newEntity[i];
+                    }
+
+                    originEntity.save(function(err) {
+                        if (err) {
+                            return res.json({ errMsg: err[0].msg });
+                        }
+
+                        return res.json({ code: 200, data: originEntity });
+                    });
                 });
-            });
-        } else {
-            _.forIn(newEntity, function(value, key) {
-                if (_.isEmpty(value)) {
-                    delete newEntity[key];
-                }
-            });
+            } else {
+                _.forIn(newEntity, function(value, key) {
+                    if (_.isEmpty(value)) {
+                        delete newEntity[key];
+                    }
+                });
 
-            model.create(newEntity, function(err, item) {
-                if (err) {
-                    tutu.logger.error(err);
-                    return res.json({ errMsg: err[0].msg });
-                }
-                return res.json({ code: 200, data: item });
-            });
+                model.create(newEntity, function(err, item) {
+                    if (err) {
+                        tutu.logger.error(err);
+                        return res.json({ errMsg: err[0].msg });
+                    }
+                    return res.json({ code: 200, data: item });
+                });
 
+            }
+        } catch (err) {
+            return res.json({ errMsg: '编辑失败' });
         }
     },
 

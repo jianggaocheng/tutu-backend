@@ -66,6 +66,7 @@ module.exports = {
                 res.cookie('password', pwd, { expires: expireDate });
 
                 var user = _.cloneDeep(userList[0]);
+                user.lastLoginString = moment(user.lastLogin).format('YYYY-MM-DD HH:mm:ss');
                 userList[0].lastLogin = new Date();
                 userList[0].save();
 

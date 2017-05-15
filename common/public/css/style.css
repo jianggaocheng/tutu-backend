@@ -3001,10 +3001,6 @@ label.error {
     content: "\f005";
 }
 
-#toast-container>.toast-success:before {
-    content: "\f00C";
-}
-
 #toast-container>div {
     -moz-box-shadow: 0 0 3px #999;
     -webkit-box-shadow: 0 0 3px #999;

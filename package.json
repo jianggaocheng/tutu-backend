@@ -1,6 +1,6 @@
 {
     "name": "tutu-backend",
-    "version": "1.0.9",
+    "version": "1.0.11",
     "description": "Provide a common solution for build an admin backend with express.",
     "main": "tutu.js",
     "scripts": {
