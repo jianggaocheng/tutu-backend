@@ -1,14 +1,14 @@
 tutu = {};
 
 $(function() {
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        showMethod: 'slideDown',
+        timeOut: 4000
+    };
     // regist first login welcome toast
     $(document).on('toast', function(event, data) {
-        toastr.options = {
-            closeButton: true,
-            progressBar: true,
-            showMethod: 'slideDown',
-            timeOut: 4000
-        };
         toastr.success(data.content, data.title);
     });
 
