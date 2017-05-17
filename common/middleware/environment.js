@@ -6,10 +6,12 @@ var device = require('express-device');
 var fingerprint = require('express-fingerprint');
 var path = require('path');
 var log4js = require('log4js');
+var compression = require('compression');
 
 module.exports = app => {
     app.use(log4js.connectLogger(log4js.getLogger('tutu'), { level: 'debug', format: ':remote-addr :method :url :status :res[Content-Length] bytes :response-time ms', nolog: '\\.gif|\\.jp?g|\\.png|\\.css|\\.js|\\.woff|\\.woff2$' }));
     app.use(bodyParser.json());
+    app.use(compression());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(session({
         resave: false,

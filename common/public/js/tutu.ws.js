@@ -1,9 +1,14 @@
 var socket;
 
+// if there is no config, do not init ws function
+if (!(tutu.config && tutu.config.wsPort)) {
+    return;
+}
+
 tutu.ws = {
     connect: function() {
         try {
-            socket = new WebSocket(tutu.config.wsPort);
+            socket = new WebSocket('ws://127.0.0.1:3110');
         } catch (e) {
             console.log('Error:', e);
             return;
