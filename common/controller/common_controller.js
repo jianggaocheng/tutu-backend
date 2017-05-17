@@ -39,6 +39,13 @@ module.exports = {
         var modelName = req.params.modelName;
         var model = tutu.models[modelName];
 
+        if (!model) {
+            tutu.logger.error('Get model failed', modelName);
+            return res.json({ errCode: 500, errMsg: 'Get model failed' });
+        }
+
+        console.dir(model);
+
         return res.json(model.jqColumns);
     },
 
@@ -66,7 +73,7 @@ module.exports = {
                 modelName: modelName,
                 displayModelName: model.displayName ? model.displayName : modelName,
                 adminOperation: model.adminAdd,
-                adminAdd: model.adminAdd,
+                adminAdd: model.adminAdd || model.adminView,
             };
             return next();
         } else {
@@ -182,6 +189,8 @@ module.exports = {
                 req.renderData.modelName = req.params.modelName;
             }
 
+            tutu.logger.info(req.renderData);
+
             res.send(tutu.templates[req.template](req.renderData));
         };
 
@@ -281,6 +290,11 @@ module.exports = {
     baseRender: function(req, res, next) {
         var renderData = req.renderData ? req.renderData : {};
         renderData.loginUser = req.session.user;
+
+        // Check template exist
+        if (!req.template) {
+            return res.send(tutu.templates[404]());
+        }
 
         async.parallel(_.merge({}, helpers.getBaseTasks(req)), function(err, results) {
             if (err) {

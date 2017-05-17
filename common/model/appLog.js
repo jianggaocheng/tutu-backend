@@ -19,8 +19,14 @@ module.exports = function(orm, db) {
                 this.logDate = new Date();
                 next();
             },
+            afterAutoFetch: function(next) {
+                this.ip = this.ip.replace('::ffff:', '');
+                next();
+            },
         },
     });
+
+    appLog.displayName = 'API日志';
 
     appLog.jqColumns = {
         columns: [
@@ -37,4 +43,6 @@ module.exports = function(orm, db) {
             [0, "desc"]
         ]
     };
+
+    appLog.adminView = true;
 };

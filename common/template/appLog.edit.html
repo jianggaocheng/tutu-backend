@@ -1,0 +1,53 @@
+<div class="modal-dialog">
+    <div class="modal-content animated fadeIn">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">APP日志详情: [{{id}}]</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" data-model-name="{{modelName}}">
+                <div class="form-group"><label class="col-sm-3 control-label">记录时间</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-static">{{logDate}}</p>
+                    </div>
+                </div>
+                <div class="form-group"><label class="col-sm-3 control-label">IP地址</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-static">{{ip}}</p>
+                    </div>
+                </div>
+                <div class="form-group"><label class="col-sm-3 control-label">设备HASH</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-static">{{deviceHash}}</p>
+                    </div>
+                </div>
+                <div class="form-group"><label class="col-sm-3 control-label">设备类型</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-static">
+                            <span class="label label-success">{{system}} </span>
+                            <span class="label label-info">{{browser}} </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group"><label class="col-sm-3 control-label">访问地址</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-static">{{path}}</p>
+                    </div>
+                </div>
+                <div class="form-group"><label class="col-sm-3 control-label">请求数据</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-static">{{data}}</p>
+                    </div>
+                </div>
+                <div class="form-group"><label class="col-sm-3 control-label">相关用户</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-static">{{userId}}</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white" data-dismiss="modal">退出</button>
+        </div>
+    </div>
+</div>

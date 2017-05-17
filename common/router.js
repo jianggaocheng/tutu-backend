@@ -5,7 +5,7 @@ module.exports = app => {
 
     // Check login
     app.all('/admin/*', controllers.adminUser.checkLogin);
-
+    app.get('/admin', controllers.index.index);
     app.get('/admin/index', controllers.index.index);
 
     app.get('/login', controllers.adminUser.login);
@@ -22,8 +22,6 @@ module.exports = app => {
     app.get('/admin/system/db', controllers.system.backupDB);
     app.post('/admin/system/doBackupDB', controllers.system.doBackupDB);
     app.get('/admin/log/showMonthConnectLog', controllers.log.showMonthConnectLog);
-
-
 
     console.log('Common routes init'.green);
 };
