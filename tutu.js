@@ -10,6 +10,7 @@ const layouts = require('handlebars-layouts');
 const WebSocket = require('ws');
 const EventEmitter = require('events').EventEmitter;
 const uuid = require('uuid');
+const _ = require('lodash');
 
 var conncetDatabase = function(tutu, callback) {
     orm.connect(tutu.config.database, function(err, db) {
@@ -60,6 +61,7 @@ class Tutu {
         // Register helpers 
         handlebars.registerHelper(layouts(handlebars));
         th.templates = {};
+        th.schedules = [];
 
         var appList = [];
         var commonApp = new TutuApp({ appPath: path.join(th.libPath, commonAppPath) });

@@ -13,6 +13,7 @@ module.exports = app => {
     app.post('/login', controllers.adminUser.doLogin);
 
     app.get('/admin/:modelName/list', controllers.common.commonAdminList);
+    app.get('/admin/:modelName/getList', controllers.common.commonAdminGetList);
     app.get('/admin/:modelName/listColumns', controllers.common.commonAdminListColumns);
     app.get('/admin/:modelName/edit/:id?', controllers.common.commonAdminEditRender);
     app.post('/admin/:modelName/edit/:id?', controllers.common.commonAdminEdit);

@@ -44,9 +44,18 @@ module.exports = {
             return res.json({ errCode: 500, errMsg: 'Get model failed' });
         }
 
-        console.dir(model);
+        var originColumns = _.cloneDeep(model.jqColumns);
+        if (model.adminDelete) {
+            originColumns.columns.push({
+                title: '操作',
+                data: null,
+                defaultContent: '<i class="fa fa-trash remove" aria-hidden="true"></i>',
+                orderable: false,
+                searchable: false
+            });
+        }
 
-        return res.json(model.jqColumns);
+        return res.json(originColumns);
     },
 
     /**
@@ -154,6 +163,26 @@ module.exports = {
         }
     },
 
+    commonAdminGetList: function(req, res) {
+        var modelName = req.params.modelName;
+        var model = tutu.models[modelName];
+
+        if (!model) {
+            return res.json({ errCode: 500, errMsg: 'Model【' + modelName + '】不存在' });
+        }
+
+        if (!model.adminGetList) {
+            return res.json({ errCode: 403, errMsg: '没有权限获取【' + modelName + '】的列表' });
+        }
+
+        model.all(function(err, list) {
+            return res.json({
+                code: 200,
+                list: list
+            });
+        });
+    },
+
     /**
      * Common render hander for backend edit
      */
@@ -186,10 +215,8 @@ module.exports = {
                 }
 
                 _.merge(req.renderData, data);
-                req.renderData.modelName = req.params.modelName;
             }
-
-            tutu.logger.info(req.renderData);
+            req.renderData.modelName = req.params.modelName;
 
             res.send(tutu.templates[req.template](req.renderData));
         };
@@ -269,19 +296,35 @@ module.exports = {
         var model = tutu.models[modelName];
         var id = req.body.id;
 
-        var si = {
-            id: id
-        };
-        model.find(si).remove(function(err) {
-            if (err) {
-                return next(err);
-            }
+        var doDelete = function() {
+            var si = {
+                id: id
+            };
+            model.find(si).remove(function(err) {
+                if (err) {
+                    return next(err);
+                }
 
-            return res.json({
-                code: 200
+                return res.json({
+                    code: 200
+                });
             });
-        });
+        };
 
+        if (model.deleteCheck) {
+            model.deleteCheck(id, function(result) {
+                if (result) {
+                    doDelete();
+                } else {
+                    return res.json({
+                        errCode: 300,
+                        errMsg: '删除前检查失败'
+                    });
+                }
+            });
+        } else {
+            doDelete();
+        }
     },
 
     /**

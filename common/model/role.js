@@ -4,5 +4,15 @@ module.exports = function(orm, db) {
         roleName: { type: 'text' },
     });
 
+    role.jqColumns = {
+        columns: [
+            { data: 'id', title: '#' },
+            { data: 'roleName', title: '角色名称' },
+        ],
+    };
+
+    role.displayName = '角色';
     role.adminDelete = true;
+    role.adminAdd = true;
+    role.adminGetList = true;
 };

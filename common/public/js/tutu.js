@@ -31,7 +31,6 @@ $(function() {
     $('.commonCreate').on('click', function(event) {
         $('#createModal').load('/admin/' + $(event.currentTarget).data('modelName') + '/edit', function() {
             $('#createModal').modal();
-
         });
     });
 
@@ -51,6 +50,37 @@ $(function() {
                     swal("发生错误!", result.errMsg ? result.errMsg : null, "error");
                 }
             }
+        });
+    });
+
+    $('#createModal').on('show.bs.modal', function(e) {
+        $('[tutu-select]').each(function(i, e) {
+            var element = $(e);
+            if (e.hasAttribute('tutu-select-empty')) {
+                element.append($('<option>'));
+            }
+            $.ajax({
+                type: 'GET',
+                url: '/admin/' + element.data('linkName') + '/getList',
+                success: function(result) {
+                    if (result.code == 200) {
+                        result.list.forEach(function(item) {
+                            var option = $('<option>');
+                            option.val(item[element.data('linkValueProp')]);
+                            option.html(item[element.data('linkHtmlProp')]);
+                            if (element.data('linkId') == item[element.data('linkValueProp')]) {
+                                option.prop('selected', 'selected');
+                            }
+                            element.append(option);
+                        });
+                        if (element.hasClass('chosen-select')) {
+                            element.chosen({});
+                        }
+                    } else {
+                        swal("发生错误!", result.errMsg ? result.errMsg : null, "error");
+                    }
+                }
+            });
         });
     });
 

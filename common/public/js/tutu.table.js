@@ -139,7 +139,7 @@ $(document).ready(function() {
                 tutu.table.autoRefresh = setInterval(function() {
                     tutu.table.clearPipeline();
                     tutu.table.ajax.reload();
-                }, 10000);
+                }, 30000);
             }
         });
 
@@ -166,7 +166,7 @@ $(document).ready(function() {
                             tutu.table.clearPipeline();
                             tutu.table.ajax.reload();
                         } else {
-                            swal("发生错误!", null, "error");
+                            swal("发生错误!", result.errMsg ? result.errMsg : null, "error");
                         }
                     }
                 });

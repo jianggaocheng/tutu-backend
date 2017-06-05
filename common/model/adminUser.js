@@ -5,6 +5,7 @@ module.exports = function(orm, db) {
         pwd: { type: 'text', required: true },
         name: { type: 'text' },
         email: { type: 'text' },
+        phone: { type: 'text' },
         lastLogin: { type: 'date', time: true },
     });
 
@@ -18,4 +19,6 @@ module.exports = function(orm, db) {
     };
 
     AdminUser.displayName = '后台用户';
+    AdminUser.adminDelete = true;
+    AdminUser.adminAdd = true;
 };

@@ -4,4 +4,6 @@ module.exports = function(orm, db) {
         menuId: { type: 'text', required: true },
     });
     roleMenu.adminDelete = true;
+    roleMenu.adminDelete = true;
+    roleMenu.adminAdd = true;
 };

@@ -25,4 +25,6 @@ module.exports = function(orm, db) {
     };
 
     menu.displayName = '菜单';
+    menu.adminDelete = true;
+    menu.adminAdd = true;
 };
