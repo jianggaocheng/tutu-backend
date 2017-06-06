@@ -125,6 +125,10 @@ $(document).ready(function() {
                     $('#dynamic-table').trigger('row.remove', [aData]);
                     e.stopPropagation();
                 });
+                $(nRow).find('.layout').click(function(e) {
+                    $('#dynamic-table').trigger('row.layout', [aData]);
+                    e.stopPropagation();
+                });
                 $(nRow).click(function(e) {
                     $('#dynamic-table').trigger('row.click', [aData]);
                 });
@@ -172,6 +176,10 @@ $(document).ready(function() {
                 });
 
             });
+        });
+
+        $('#dynamic-table').on('row.layout', function(e, data) {
+            window.location.href = '/admin/device/layout?mac=' + data.MAC;
         });
 
         $('#dynamic-table').on('row.click', function(e, data) {

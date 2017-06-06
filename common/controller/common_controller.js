@@ -335,7 +335,7 @@ module.exports = {
         renderData.loginUser = req.session.user;
 
         // Check template exist
-        if (!req.template) {
+        if (!(req.template || req.content)) {
             return res.send(tutu.templates[404]());
         }
 
@@ -369,6 +369,9 @@ module.exports = {
 
             if (req.template) {
                 handlebars.registerPartial('content', tutu.templates[req.template]);
+                res.send(tutu.templates.base(renderData));
+            } else if (req.content) {
+                handlebars.registerPartial('content', req.content);
                 res.send(tutu.templates.base(renderData));
             }
         });
