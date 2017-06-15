@@ -58,6 +58,9 @@ class Tutu {
         // Start logger
         th.logger = new TutuLogger4js();
 
+        // EventEmitter 
+        th.eventEmitter = new EventEmitter();
+
         // Register helpers 
         handlebars.registerHelper(layouts(handlebars));
         th.templates = {};
@@ -79,6 +82,7 @@ class Tutu {
         th.app.get('/admin/*', th.controller.common.baseRender);
         th.app.use(function(err, req, res, next) {
             th.logger.error('错误处理中间件:', err);
+            res.sendStatus(500);
         });
 
         async.auto({
@@ -118,10 +122,26 @@ class Tutu {
                         }
 
                     };
-                    tutu.ws.clientList = {};
 
-                    // EventEmitter 
-                    th.eventEmitter = new EventEmitter();
+                    tutu.ws.broadcast = function(topic, data) {
+                        try {
+                            var sendData = {
+                                topic: topic,
+                                payload: data
+                            };
+
+                            _.forEach(th.ws.clientList, function(c) {
+                                if (c && c.readyState === WebSocket.OPEN) {
+                                    c.send(JSON.stringify(sendData));
+                                }
+                            });
+                        } catch (e) {
+                            th.logger.error('Websocket error:', th.ws.clientList);
+                        }
+
+                    };
+
+                    tutu.ws.clientList = {};
 
                     const wss = new WebSocket.Server({
                         perMessageDeflate: false,
@@ -146,6 +166,7 @@ class Tutu {
                         ws.on('close', function(e) {
                             th.logger.debug('Websocket close', ws.uuid);
                             tutu.ws.clientList[ws.uuid] = null;
+                            delete tutu.ws.clientList[ws.uuid];
                         });
                     });
                     console.log(("Listening on websocket port " + th.config.wsPort).green);

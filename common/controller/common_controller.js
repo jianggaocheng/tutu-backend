@@ -259,6 +259,13 @@ module.exports = {
                         originEntity[i] = newEntity[i];
                     }
 
+                    // TOTO: fix auto update when only edit associate key not edit auto fetched object
+                    for (var j in originEntity) {
+                        if (_.isObject(originEntity[j])) {
+                            delete originEntity[j];
+                        }
+                    }
+
                     originEntity.save(function(err) {
                         if (err) {
                             return res.json({ errMsg: err[0].msg });

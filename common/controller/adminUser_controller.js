@@ -70,9 +70,8 @@ module.exports = {
                 userList[0].lastLogin = new Date();
                 userList[0].save();
 
-                user.password = null;
-
-                delete user.password;
+                user.pwd = null;
+                delete user.pwd;
                 req.session.user = user;
                 console.log('LOGIN:', user);
                 tutu.logger.log('', 'LOGIN', user.role.roleName, user.userId, user.email);

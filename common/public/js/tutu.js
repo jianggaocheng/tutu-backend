@@ -9,7 +9,11 @@ $(function() {
     };
     // regist first login welcome toast
     $(document).on('toast', function(event, data) {
-        toastr.success(data.content, data.title);
+        if (data.type) {
+            toastr[data.type](data.content, data.title);
+        } else {
+            toastr.success(data.content, data.title);
+        }
     });
 
     $('.backupDB').on('click', function(event) {
@@ -49,6 +53,10 @@ $(function() {
                 } else {
                     swal("发生错误!", result.errMsg ? result.errMsg : null, "error");
                 }
+            },
+            error: function() {
+                swal("发生错误!", null, "error");
+
             }
         });
     });
