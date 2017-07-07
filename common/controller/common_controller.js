@@ -114,6 +114,10 @@ module.exports = {
                 });
             }
 
+            if (_.isEmpty(si.or)) {
+                delete si.or;
+            }
+
             async.parallel({
                     recordsTotal: function(callback) {
                         model.count({}, callback);
@@ -223,7 +227,7 @@ module.exports = {
 
 
         if (req.params.id) {
-            model.find({ id: req.params.id }).one(function(err, item) {
+            model.find(tutu.helpers.envHelper.genIDSearchInfo(req.params.id)).one(function(err, item) {
                 if (err) {
                     tutu.logger.error(err);
                     return res.json(err);
@@ -249,7 +253,7 @@ module.exports = {
         try {
             // Judge the operation (edit or create)
             if (req.params.id) {
-                model.find({ id: req.params.id }).one(function(err, originEntity) {
+                model.find(tutu.helpers.envHelper.genIDSearchInfo(req.params.id)).one(function(err, originEntity) {
                     if (err) {
                         tutu.logger.error(err);
                         return res.json({ errMsg: err[0].msg });
@@ -304,9 +308,7 @@ module.exports = {
         var id = req.body.id;
 
         var doDelete = function() {
-            var si = {
-                id: id
-            };
+            var si = tutu.helpers.envHelper.genIDSearchInfo(id);
             model.find(si).remove(function(err) {
                 if (err) {
                     return next(err);

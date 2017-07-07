@@ -16,11 +16,11 @@ class TutuLogger4js extends TutuLogger {
             }
             var logFilePath = path.join(logDirectory, moment().format('YYYY-MM-DD') + '.log');
             log4js.addAppender(log4js.appenders.file(logFilePath), 'tutu');
-            var logger = log4js.getLogger('tutu');
-            return logger;
         }
 
+        var logger = log4js.getLogger('tutu');
         super();
+        return logger;
     }
 }
 

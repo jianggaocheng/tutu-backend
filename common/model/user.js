@@ -29,12 +29,17 @@ module.exports = function(orm, db) {
 
                 return next();
             },
+            afterLoad: function(next) {
+                if (this._id) {
+                    this.id = this._id;
+                }
+                next();
+            }
         },
     });
 
     User.jqColumns = {
         columns: [
-            { data: 'id', title: '#' },
             { data: 'userId', title: '用户ID' },
             { data: 'name', title: '姓名' },
             { data: 'phone', title: '联系方式' },

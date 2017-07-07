@@ -9,6 +9,12 @@
                 <div class="form-group"><label class="col-sm-3 control-label">角色名称</label>
                     <div class="col-sm-9"><input type="text" class="form-control" name="roleName" value="{{roleName}}"></div>
                 </div>
+                <div class="form-group"><label class="col-sm-3 control-label">可用菜单</label>
+                <div class="col-sm-9">
+                    <select class="select2 form-control" multiple="multiple" name="menus">
+                    </select>
+                </div>
+                </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -17,3 +23,31 @@
         </div>
     </div>
 </div>
+<script src="/public/js/plugins/select2/select2.full.min.js"></script>
+
+<script>
+    $.ajax({
+        url: '/admin/menu/getList',
+        success: function(data) {
+            if (data.code == 200) {
+                data.list.forEach(function(e) {
+                    e.text = e.title;
+                });
+
+                $(".select2").select2({
+                    placeholder: '请选择权限',
+                    data: data.list,
+                });
+
+                $('select.select2').val([
+                {{#each menus}}
+                '{{id}}',
+                {{/each }}
+                ]).trigger('change');
+            } else {
+                swal('获取菜单列表出错');
+            }
+        },
+    })
+    
+</script>

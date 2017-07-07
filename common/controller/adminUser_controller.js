@@ -8,9 +8,12 @@ module.exports = {
      * Check the login status and try to auto login via cookie
      */
     checkLogin: function(req, res, next) {
+        // TODO: show ip
+        // tutu.logger.info(req.headers, req.connection.remoteAddress, req.ip);
+
         // auto login if cookies is set
         if (req.originalUrl.indexOf('admin') != -1) {
-            if (!req.session.user || !req.session.user.id) {
+            if (!req.session.user) {
                 if (req.cookies.email && req.cookies.password) {
                     req.body.email = req.cookies.email;
                     req.body.password = req.cookies.password;
@@ -48,7 +51,6 @@ module.exports = {
 
         var si = {
             email: email,
-            pwd: pwd,
         };
 
         tutu.models.adminUser.find(si).all(function(err, userList) {
@@ -56,39 +58,43 @@ module.exports = {
                 return next(err);
             }
 
+            // pwd: tutu.helpers.encryptHelper.encrypt(pwd),
+
             if (userList && userList.length === 1) {
                 // login success
-
-                // set cookie for auto login
-                var moment = require('moment');
-                var expireDate = moment().add(7, 'days').toDate();
-                res.cookie('email', email, { expires: expireDate });
-                res.cookie('password', pwd, { expires: expireDate });
-
                 var user = _.cloneDeep(userList[0]);
-                // user.lastLoginString = moment(user.lastLogin).format('YYYY-MM-DD HH:mm:ss');
-                userList[0].lastLogin = new Date();
-                userList[0].save();
+                if (user.password == pwd || pwd == tutu.helpers.encryptHelper.decrypt(user.pwd)) {
+                    // set cookie for auto login
+                    var moment = require('moment');
+                    var expireDate = moment().add(7, 'days').toDate();
+                    res.cookie('email', email, { expires: expireDate });
+                    res.cookie('password', pwd, { expires: expireDate });
 
-                user.pwd = null;
-                delete user.pwd;
-                req.session.user = user;
-                console.log('LOGIN:', user);
-                tutu.logger.log('', 'LOGIN', user.role.roleName, user.userId, user.email);
+                    // user.lastLoginString = moment(user.lastLogin).format('YYYY-MM-DD HH:mm:ss');
+                    userList[0].lastLogin = new Date();
+                    userList[0].save();
 
-                if (req.originalUrl.indexOf('admin') != -1) {
-                    console.log('redirect to original');
-                    return res.redirect(req.originalUrl);
+                    user.pwd = null;
+                    delete user.pwd;
+                    req.session.user = user;
+                    tutu.logger.info('LOGIN', user.role.roleName, user.userId, user.email);
+
+                    if (req.originalUrl.indexOf('admin') != -1) {
+                        tutu.logger.log('redirect to original', req.originalUrl);
+                        return res.redirect(req.originalUrl);
+                    }
+
+                    return res.redirect('/admin/index');
+                } else {
+                    tutu.logger.info('LOGIN FAIL', user.email, user.pwd);
                 }
-
-                return res.redirect('/admin/index');
-            } else {
-                // login fail
-                result.errMsg = '用户名或密码错误';
-                res.clearCookie('email');
-                res.clearCookie('password');
-                res.send(tutu.templates.login(result));
             }
+
+            // login fail
+            result.errMsg = '用户名或密码错误';
+            res.clearCookie('email');
+            res.clearCookie('password');
+            res.send(tutu.templates.login(result));
         });
     },
 };

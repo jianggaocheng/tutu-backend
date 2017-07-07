@@ -11,8 +11,10 @@ const WebSocket = require('ws');
 const EventEmitter = require('events').EventEmitter;
 const uuid = require('uuid');
 const _ = require('lodash');
+const https = require('https');
+const http = require('http');
 
-var conncetDatabase = function(tutu, callback) {
+var connectDatabase = function(tutu, callback) {
     orm.connect(tutu.config.database, function(err, db) {
         if (err) {
             return callback(err);
@@ -51,6 +53,7 @@ var initData = function(results, callback) {
 class Tutu {
     constructor(options) {
         var th = this;
+        var server;
         th.app = express();
         th.libPath = __dirname;
         th.options = options;
@@ -86,7 +89,7 @@ class Tutu {
         });
 
         async.auto({
-            connectDatabase: async.apply(conncetDatabase, th),
+            connectDatabase: async.apply(connectDatabase, th),
             defineDataModels: ['connectDatabase', async.apply(defineDataModels, th, appList)],
             syncDatabase: ['connectDatabase', 'defineDataModels', syncDatabase],
             initData: ['syncDatabase', initData],
@@ -96,7 +99,13 @@ class Tutu {
                 return;
             }
 
-            th.app.listen(th.config.port, function() {
+            if (!options.credentials) {
+                server = http.createServer(th.app);
+            } else {
+                server = https.createServer(options.credentials, th.app);
+            }
+
+            server.listen(th.config.port, function() {
                 console.log(("Listening on port " + th.config.port).green);
 
                 // enable web socket

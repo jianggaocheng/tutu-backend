@@ -1,6 +1,6 @@
 module.exports = function(orm, db) {
     var appLog = db.define('appLog', {
-        id: { type: 'serial', key: true }, // the auto-incrementing primary key
+        // id: { type: 'serial', key: true }, // the auto-incrementing primary key
         ip: { type: 'text' },
         logDate: { type: 'date', time: true },
         deviceHash: { type: 'text' },

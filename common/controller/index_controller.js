@@ -9,7 +9,6 @@ module.exports = {
 
     index: function(req, res, next) {
         req.template = 'dashboard';
-        req.renderData = { test: 'test' };
         next();
     },
 };

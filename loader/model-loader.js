@@ -15,7 +15,7 @@ class TutuModelLoader extends TutuLoader {
         var loadFileArray = fs.readdirSync(modelPath);
 
         loadFileArray = _.reject(loadFileArray, function(f) {
-            if (path.extname(f) == 'js' || f.indexOf('index') != -1) {
+            if (path.extname(f) != '.js' || f == 'index.js') {
                 return true;
             }
 

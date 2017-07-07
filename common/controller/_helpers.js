@@ -10,48 +10,24 @@ module.exports = {
                 return callback(null, parentMenu);
             }
 
-            var si = {
-                roleId: req.session.user.roleId,
-            };
+            tutu.models.menu.find(tutu.helpers.envHelper.genIDSearchInfo(_.map(req.session.user.role.menus, 'id'))).all(function(err, allMenuOfUser) {
+                if (err) {
+                    return tutu.logger.error(err);
+                }
+                var parentMenu = _.sortBy(_.filter(allMenuOfUser, { 'parentId': null }), 'sort');
 
-            tutu.models.roleMenu.find(si)
-                .run(function(err, list) {
-                    if (err) {
-                        return callback(err);
+                _(parentMenu).forEach(function(item) {
+                    item.subMenus = _.sortBy(_.filter(allMenuOfUser, { 'parentId': item.id }), 'sort');
+
+                    if (item.subMenus.length > 0) {
+                        item.hasSubMenus = true;
+                    } else {
+                        item.hasSubMenus = false;
                     }
-
-                    var menuIdArray = [];
-                    _(list).forEach(function(roleMenu) {
-                        menuIdArray.push(roleMenu.menu);
-                    });
-
-                    var menuSi = {
-                        id: _.map(list, 'menuId'),
-                    };
-
-                    tutu.models.menu.find(menuSi).order('sort').run(function(err, allMenuOfUser) {
-                        // build menu structsß
-                        if (err) {
-                            tutu.logger.error(err);
-                            callback(err);
-                        }
-
-                        var parentMenu = _.filter(allMenuOfUser, { 'parentId': null });
-
-                        _(parentMenu).forEach(function(item) {
-                            item.subMenus = _.sortBy(_.filter(allMenuOfUser, { 'parentId': item.id }), 'sort');
-                            if (item.subMenus.length > 0) {
-                                item.hasSubMenus = true;
-                            } else {
-                                item.hasSubMenus = false;
-                            }
-                        });
-
-                        cache.put('menuList' + req.session.user.roleId, parentMenu, 300 * 1000);
-
-                        callback(null, parentMenu);
-                    });
                 });
+
+                cache.put('menuList' + req.session.user.roleId, parentMenu, 300 * 1000);
+            });
         };
     },
 

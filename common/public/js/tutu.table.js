@@ -120,6 +120,10 @@ $(document).ready(function() {
                 pages: 5 // number of pages to cache
             }),
             "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+                if (!aData.id) {
+                    aData.id = aData._id;
+                }
+
                 // Bind click event
                 $(nRow).find('.remove').click(function(e) {
                     $('#dynamic-table').trigger('row.remove', [aData]);
@@ -144,6 +148,9 @@ $(document).ready(function() {
                     tutu.table.clearPipeline();
                     tutu.table.ajax.reload();
                 }, 30000);
+            },
+            error: function() {
+                swal('获取信息出错', null, 'error');
             }
         });
 

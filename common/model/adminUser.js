@@ -1,17 +1,26 @@
 module.exports = function(orm, db) {
     var AdminUser = db.define('adminUser', {
-        id: { type: 'serial', key: true }, // the auto-incrementing primary key
+        // id: { type: 'serial', key: true }, // the auto-incrementing primary key
         userId: { type: 'text' },
         pwd: { type: 'text', required: true },
         name: { type: 'text' },
         email: { type: 'text' },
         phone: { type: 'text' },
         lastLogin: { type: 'date', time: true },
+    }, {
+        hooks: {
+            afterLoad: function(next) {
+                if (this._id) {
+                    this.id = this._id;
+                }
+
+                next();
+            }
+        }
     });
 
     AdminUser.jqColumns = {
         columns: [
-            { data: 'id', title: '#' },
             { data: 'userId', title: '用户名' },
             { data: 'email', title: '电子邮箱' },
             { data: 'lastLogin', title: '最后登录' },
