@@ -57,6 +57,7 @@ class Tutu {
         th.app = express();
         th.libPath = __dirname;
         th.options = options;
+        th.baseInfo = {};
 
         // Start logger
         th.logger = new TutuLogger4js();

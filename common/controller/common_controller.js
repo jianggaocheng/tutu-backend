@@ -142,6 +142,9 @@ module.exports = {
                         chainResult.limit(parsedRequest.length).offset(parsedRequest.start);
 
                         chainResult.all(function(err, list) {
+                            if (err) {
+                                return callbacl(err);
+                            }
                             // Format date
                             list = _.cloneDeep(list);
                             _.forEach(list, function(row) {

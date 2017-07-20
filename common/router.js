@@ -11,6 +11,8 @@ module.exports = app => {
     app.get('/login', controllers.adminUser.login);
     app.get('/logout', controllers.adminUser.logout);
     app.post('/login', controllers.adminUser.doLogin);
+    app.post('/admin/changePassword', controllers.adminUser.changePwd);
+    app.post('/admin/resetPassword', controllers.adminUser.resetPwd);
 
     app.get('/admin/:modelName/list', controllers.common.commonAdminList);
     app.get('/admin/:modelName/getList', controllers.common.commonAdminGetList);

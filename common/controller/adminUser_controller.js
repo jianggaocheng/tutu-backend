@@ -10,6 +10,10 @@ module.exports = {
     checkLogin: function(req, res, next) {
         // TODO: show ip
         // tutu.logger.info(req.headers, req.connection.remoteAddress, req.ip);
+        if (tutu.licenceData && tutu.licenceData.lock == 1) {
+            tutu.logger.debug(tutu.licenceData);
+            return res.send(tutu.templates['lock']());
+        }
 
         // auto login if cookies is set
         if (req.originalUrl.indexOf('admin') != -1) {
@@ -95,6 +99,62 @@ module.exports = {
             res.clearCookie('email');
             res.clearCookie('password');
             res.send(tutu.templates.login(result));
+        });
+    },
+
+    changePwd: function(req, res, next) {
+        var originPass = req.body.originPass;
+        var newPass = req.body.newPass;
+
+        tutu.models.adminUser.get(req.session.user.id, function(err, user) {
+            if (err) {
+                return res.json({ errCode: 500, errMsg: '修改密码发生错误' });
+            }
+
+            if (originPass == tutu.helpers.encryptHelper.decrypt(user.pwd)) {
+                user.pwd = tutu.helpers.encryptHelper.encrypt(newPass);
+                user.save(function(err) {
+                    if (err) {
+                        return res.json({ errCode: 500, errMsg: '修改密码发生错误' });
+                    }
+                    req.session.user = null;
+                    res.clearCookie('email');
+                    res.clearCookie('password');
+                    return res.json({ code: 200 });
+                });
+            } else {
+                return res.json({ errCode: 500, errMsg: '旧密码错误' });
+            }
+        });
+    },
+
+    resetPwd: function(req, res, next) {
+        var id = req.body.id;
+
+        function randomString(len) {　　
+            len = len || 32;　　
+            var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'; /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/ 　　
+            var maxPos = $chars.length;　　
+            var pwd = '';　　
+            for (i = 0; i < len; i++) {　　　　 pwd += $chars.charAt(Math.floor(Math.random() * maxPos));　　 }　　
+            return pwd;
+        }
+
+        tutu.models.adminUser.get(req.body.id, function(err, user) {
+            if (err) {
+                return res.json({ errCode: 500, errMsg: '重置密码发生错误' });
+            }
+
+            var newPass = randomString(10);
+
+            user.pwd = tutu.helpers.encryptHelper.encrypt(newPass);
+            user.save(function(err) {
+                if (err) {
+                    return res.json({ errCode: 500, errMsg: '重置密码发生错误' });
+                }
+
+                return res.json({ code: 200, newPass: newPass });
+            });
         });
     },
 };

@@ -16,20 +16,55 @@ $(function() {
         }
     });
 
-    $('.backupDB').on('click', function(event) {
-        // $.ajax({
-        //     type: 'POST',
-        //     url: '/admin/' + jqTable.data('modelName') + '/delete',
-        //     success: function(result) {
-        //         if (result.code == 200) {
-        //             swal("操作成功!", null, "success");
-        //             tutu.table.clearPipeline();
-        //             tutu.table.ajax.reload();
-        //         } else {
-        //             swal("发生错误!", null, "error");
-        //         }
-        //     }
-        // });
+    $(document).on('refresh', function(event, data) {
+        location.reload();
+    });
+
+    $('#changePass').on('click', function(event) {
+        var originPass = $('#originPassword').val();
+        var newPass = $('#newPassword').val();
+        var confirmPass = $('#confirmPassword').val();
+
+        if (!originPass || !newPass || !confirmPass) {
+            return swal('请填写完整信息', null, 'error');
+        }
+
+        if (newPass !== confirmPass) {
+            return swal('两次密码不相等', null, 'error');
+        }
+
+        swal({
+                title: "请确认",
+                text: "确认要修改密码吗？",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                closeOnConfirm: false
+            },
+            function() {
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        originPass: originPass,
+                        newPass: newPass,
+                    },
+                    url: '/admin/changePassword',
+                    success: function(result) {
+                        if (result.code == 200) {
+                            swal("操作成功!", "请使用新密码重新登录", "success");
+                            location.reload();
+                        } else {
+                            swal("发生错误!", result.errMsg ? result.errMsg : null, "error");
+                        }
+                    },
+                    error: function() {
+                        swal("发生错误!", null, "error");
+
+                    }
+                });
+            });
     });
 
     $('.commonCreate').on('click', function(event) {
