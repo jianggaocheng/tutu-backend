@@ -51,7 +51,7 @@ class TuTuApp {
                         name: filename,
                         job: sheduledJob,
                     });
-                    tutu.logger.debug('Schedule job: ' + filename);
+                    tutu.coreLogger.debug('Schedule job: ' + filename);
                 }
             });
         }

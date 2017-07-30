@@ -1,10 +1,3 @@
-class TutuLogger {
-    constructor() {
+const logger = require('./tutu-logger');
 
-    }
-    log() {
-        console.log(arguments);
-    }
-}
-
-module.exports = TutuLogger;
+module.exports = logger;

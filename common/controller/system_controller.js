@@ -2,7 +2,6 @@ var _ = require('lodash');
 var async = require('async');
 var moment = require('moment');
 var path = require('path');
-var backupPath = path.join(APP_PATH, '/backup/');
 
 module.exports = {
     backupDB: function(req, res, next) {
@@ -34,29 +33,6 @@ module.exports = {
             req.template = 'system.backupDB';
             req.renderData = { list: fileInfoArray };
             next();
-        });
-    },
-
-    doBackupDB: function(req, res, next) {
-        console.log('doBackupDB');
-        var mysqlDump = require('mysqldump');
-        var fileName = moment().format('YYYYMMDDHHmmss');
-
-        mysqlDump({
-            host: tutu.config.database.host,
-            user: tutu.config.database.user,
-            password: tutu.config.database.password,
-            database: tutu.config.database.database,
-            port: tutu.config.database.port,
-            dest: path.join(APP_PATH, '/backup/' + fileName + '.sql') // destination file 
-        }, function(err) {
-            console.dir(err);
-            // create data.sql file; 
-            if (err) {
-                tutu.logger.error(err);
-            }
-
-            res.json({ code: 200 });
         });
     },
 };

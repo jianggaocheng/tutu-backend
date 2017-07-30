@@ -27,7 +27,7 @@
         "jpush-sdk": "^3.4.1",
         "jshint": "^2.9.4",
         "lodash": "^4.17.4",
-        "log4js": "^1.1.1",
+        "log4js": "^2.2.0",
         "memory-cache": "^0.1.6",
         "moment": "^2.18.1",
         "mongodb": "^2.2.29",

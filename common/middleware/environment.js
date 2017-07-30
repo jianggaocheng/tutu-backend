@@ -32,6 +32,4 @@ module.exports = app => {
             fingerprint.geoip,
         ]
     }));
-
-    console.log('Common environment init'.green);
 };

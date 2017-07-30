@@ -22,9 +22,5 @@ module.exports = app => {
     app.post('/admin/:modelName/delete', controllers.common.commonAdminDelete);
     app.post('/admin/bindWebsocketUUID', controllers.common.bindWebsocketUUID);
 
-    app.get('/admin/system/db', controllers.system.backupDB);
-    app.post('/admin/system/doBackupDB', controllers.system.doBackupDB);
     app.get('/admin/log/showMonthConnectLog', controllers.log.showMonthConnectLog);
-
-    console.log('Common routes init'.green);
 };

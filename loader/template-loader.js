@@ -15,7 +15,7 @@ class TutuTemplateLoader extends TutuLoader {
             if (path.extname(filename) == '.html') {
                 var name = filename.substr(0, _.lastIndexOf(filename, '.'));
                 tutu.templates[name] = handlebars.compile(fs.readFileSync(path.join(templatePath, filename), "utf-8"));
-                console.log('Load template:', name);
+                tutu.coreLogger.debug('Load template:', name);
             } else if (path.extname(filename) == '.hbs') {
                 handlebars.registerPartial('layout', fs.readFileSync(path.join(templatePath, filename), 'utf8'));
             }
@@ -27,7 +27,7 @@ class TutuTemplateLoader extends TutuLoader {
                 if (path.extname(filename) == '.html') {
                     var part = handlebars.compile(fs.readFileSync(path.join(componentsPath, filename), "utf-8"));
                     handlebars.registerPartial('components/' + filename, part);
-                    console.log('Load partial:', filename);
+                    tutu.coreLogger.debug('Load partial:', filename);
                 }
             });
         }

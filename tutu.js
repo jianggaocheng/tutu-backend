@@ -1,5 +1,5 @@
 const TutuApp = require('./application');
-const TutuLogger4js = require('./logger/logger4js');
+const TutuLogger = require('./logger');
 const commonAppPath = './common';
 const path = require('path');
 const express = require('express');
@@ -22,7 +22,7 @@ var connectDatabase = function(tutu, callback) {
         db.settings.set("instance.returnAllErrors", true);
         db.settings.set("instance.autoFetch", true);
         db.settings.set("instance.autoFetchLimit", 2);
-        console.log(("Database connected").green);
+        tutu.coreLogger.debug("Database connected");
         tutu.db = db;
         callback(err, db);
     });
@@ -40,7 +40,7 @@ var defineDataModels = function(tutu, appList, results, callback) {
 
 var syncDatabase = function(results, callback) {
     results.connectDatabase.sync(function() {
-        console.log(("Database synced").green);
+        tutu.coreLogger.debug("Database synced");
         callback(null);
     });
 };
@@ -60,7 +60,7 @@ class Tutu {
         th.baseInfo = {};
 
         // Start logger
-        th.logger = new TutuLogger4js();
+        new TutuLogger(th);
 
         // EventEmitter 
         th.eventEmitter = new EventEmitter();
@@ -85,7 +85,7 @@ class Tutu {
         // TODO: Admin page render. should always be the last one item
         th.app.get('/admin/*', th.controller.common.baseRender);
         th.app.use(function(err, req, res, next) {
-            th.logger.error('错误处理中间件:', err);
+            th.coreLogger.error('错误处理中间件:', err);
             res.sendStatus(500);
         });
 
@@ -96,7 +96,7 @@ class Tutu {
             initData: ['syncDatabase', initData],
         }, function(err) {
             if (err) {
-                th.logger.error('Err', err);
+                th.coreLogger.error('Err', err);
                 return;
             }
 
@@ -107,7 +107,7 @@ class Tutu {
             }
 
             server.listen(th.config.port, function() {
-                console.log(("Listening on port " + th.config.port).green);
+                tutu.coreLogger.debug("Listening on port " + th.config.port);
 
                 // enable web socket
                 if (th.config.wsPort) {
@@ -115,7 +115,7 @@ class Tutu {
 
                     tutu.ws.sendMsg = function(uuid, topic, data) {
                         try {
-                            th.logger.debug('Websocket send:', uuid, topic, JSON.stringify(data));
+                            th.coreLogger.debug('Websocket send:', uuid, topic, JSON.stringify(data));
                             var sendData = {
                                 topic: topic,
                                 payload: data
@@ -124,11 +124,11 @@ class Tutu {
                             if (th.ws.clientList[uuid]) {
                                 th.ws.clientList[uuid].send(JSON.stringify(sendData));
                             } else {
-                                th.logger.error('Get ws client failed', uuid);
+                                th.coreLogger.error('Get ws client failed', uuid);
                             }
 
                         } catch (e) {
-                            th.logger.error('Websocket error:', e);
+                            th.coreLogger.error('Websocket error:', e);
                         }
 
                     };
@@ -146,7 +146,7 @@ class Tutu {
                                 }
                             });
                         } catch (e) {
-                            th.logger.error('Websocket error:', th.ws.clientList);
+                            th.coreLogger.error('Websocket error:', th.ws.clientList);
                         }
 
                     };
@@ -160,10 +160,10 @@ class Tutu {
 
                     wss.on('connection', function connection(ws) {
                         ws.uuid = uuid.v4();
-                        th.logger.debug('Websocket connect', ws.uuid);
+                        th.coreLogger.debug('Websocket connect', ws.uuid);
                         tutu.ws.clientList[ws.uuid] = ws;
                         ws.on('message', function incoming(message) {
-                            th.logger.debug('Websocket message', message);
+                            th.coreLogger.debug('Websocket message', message);
                         });
 
                         ws.send(JSON.stringify({
@@ -174,16 +174,16 @@ class Tutu {
                         }));
 
                         ws.on('close', function(e) {
-                            th.logger.debug('Websocket close', ws.uuid);
+                            th.coreLogger.debug('Websocket close', ws.uuid);
                             tutu.ws.clientList[ws.uuid] = null;
                             delete tutu.ws.clientList[ws.uuid];
                         });
                     });
-                    console.log(("Listening on websocket port " + th.config.wsPort).green);
+                    tutu.coreLogger.debug("Listening on websocket port " + th.config.wsPort);
                 }
             }).on('error', function(e) {
                 if (e.code == 'EADDRINUSE') {
-                    console.log('Address in use. Is the server already running?'.red);
+                    tutu.coreLogger.error('Address in use. Is the server already running?');
                 }
             });
 
