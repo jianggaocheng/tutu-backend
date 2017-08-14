@@ -13,6 +13,8 @@ const uuid = require('uuid');
 const _ = require('lodash');
 const https = require('https');
 const http = require('http');
+const schedule = require('node-schedule');
+
 
 var connectDatabase = function(tutu, callback) {
     orm.connect(tutu.config.database, function(err, db) {
@@ -49,6 +51,19 @@ var initData = function(results, callback) {
     // TODO: init data
     callback(null);
 };
+var registSchedule = function(results, callback) {
+    _.forEach(tutu.preSchedules, function(item) {
+        var job = item.job;
+        var sheduledJob = schedule.scheduleJob(job.schedule.cron, job.task);
+        tutu.schedules.push({
+            name: item.filename,
+            job: sheduledJob,
+        });
+        tutu.coreLogger.debug('Schedule job: ' + item.filename);
+    });
+
+    callback(null);
+};
 
 class Tutu {
     constructor(options) {
@@ -68,6 +83,7 @@ class Tutu {
         // Register helpers 
         handlebars.registerHelper(layouts(handlebars));
         th.templates = {};
+        th.preSchedules = [];
         th.schedules = [];
 
         var appList = [];
@@ -94,6 +110,7 @@ class Tutu {
             defineDataModels: ['connectDatabase', async.apply(defineDataModels, th, appList)],
             syncDatabase: ['connectDatabase', 'defineDataModels', syncDatabase],
             initData: ['syncDatabase', initData],
+            registSchedule: ['syncDatabase', registSchedule],
         }, function(err) {
             if (err) {
                 th.coreLogger.error('Err', err);

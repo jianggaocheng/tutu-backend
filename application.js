@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const schedule = require('node-schedule');
 const TutuConfigLoader = require('./loader/config-loader');
 const TutuModelLoader = require('./loader/model-loader');
 const TutuTemplateLoader = require('./loader/template-loader');
@@ -46,12 +45,8 @@ class TuTuApp {
                 // prevent '.DStore' file in MAC os
                 if (path.extname(filename) == '.js') {
                     var job = require(path.join(schedulesPath, filename));
-                    var sheduledJob = schedule.scheduleJob(job.schedule.cron, job.task);
-                    tutu.schedules.push({
-                        name: filename,
-                        job: sheduledJob,
-                    });
-                    tutu.coreLogger.debug('Schedule job: ' + filename);
+                    tutu.preSchedules.push({ job, filename });
+
                 }
             });
         }

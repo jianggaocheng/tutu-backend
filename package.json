@@ -1,6 +1,6 @@
 {
     "name": "tutu-backend",
-    "version": "1.0.19",
+    "version": "1.1.6",
     "description": "Provide a common solution for build an admin backend with express.",
     "main": "tutu.js",
     "scripts": {
@@ -20,8 +20,6 @@
         "express-fingerprint": "^1.1.1",
         "express-session": "^1.15.2",
         "gulp": "^3.9.1",
-        "gulp-jshint": "^2.0.4",
-        "gulp-sass": "^3.1.0",
         "handlebars": "^4.0.6",
         "handlebars-layouts": "^3.1.4",
         "jpush-sdk": "^3.4.1",
@@ -36,10 +34,8 @@
         "node-mysql": "^0.4.2",
         "node-schedule": "^1.2.3",
         "orm": "^3.2.3",
-        "resize-img": "^1.1.2",
         "simple-encryptor": "^1.1.0",
         "uuid": "^3.0.1",
-        "wechat-oauth": "^1.2.1",
         "ws": "^2.3.1"
     },
     "repository": {

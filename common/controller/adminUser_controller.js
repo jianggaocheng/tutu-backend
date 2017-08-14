@@ -84,13 +84,13 @@ module.exports = {
                     tutu.logger.info('LOGIN', user.role.roleName, user.userId, user.email);
 
                     if (req.originalUrl.indexOf('admin') != -1) {
-                        tutu.logger.log('redirect to original', req.originalUrl);
+                        tutu.logger.debug('redirect to original', req.originalUrl);
                         return res.redirect(req.originalUrl);
                     }
 
                     return res.redirect('/admin/index');
                 } else {
-                    tutu.logger.info('LOGIN FAIL', user.email, user.pwd);
+                    tutu.logger.info('LOGIN FAIL', user.email, tutu.helpers.encryptHelper.decrypt(user.pwd));
                 }
             }
 
