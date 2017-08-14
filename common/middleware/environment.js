@@ -32,4 +32,13 @@ module.exports = app => {
             fingerprint.geoip,
         ]
     }));
+
+    // Attach data to request and response
+    app.use(function(req, res, next) {
+        // Attach service to req, so that can use req.xxxService to call service
+        if (tutu.services) {
+            Object.assign(req, tutu.services);
+        }
+        next();
+    });
 };

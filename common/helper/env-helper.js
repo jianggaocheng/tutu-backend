@@ -1,9 +1,9 @@
 module.exports.envHelper = {
-    genIDSearchInfo: function(id) {
+    genIDSearchInfo: function(id, teamId) {
         if (tutu.config.database.protocol == 'mongodb') {
-            return { _id: id };
+            return { _id: id, teamId: teamId, };
         } else {
-            return { id: id };
+            return { id: id, teamId: teamId, };
         }
     }
 };

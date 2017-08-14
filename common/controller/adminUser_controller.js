@@ -9,7 +9,7 @@ module.exports = {
      */
     checkLogin: function(req, res, next) {
         // TODO: show ip
-        // tutu.logger.info(req.headers, req.connection.remoteAddress, req.ip);
+        // tutu.logger.info('check login', req.headers, req.connection.remoteAddress, req.ip);
         if (tutu.licenceData && tutu.licenceData.lock == 1) {
             tutu.logger.debug(tutu.licenceData);
             return res.send(tutu.templates['lock']());
@@ -19,15 +19,38 @@ module.exports = {
         if (req.originalUrl.indexOf('admin') != -1) {
             if (!req.session.user) {
                 if (req.cookies.email && req.cookies.password) {
-                    req.body.email = req.cookies.email;
-                    req.body.password = req.cookies.password;
-                    return module.exports.doLogin(req, res, next);
+                    req.loginService.checkBackendLogin(req.cookies.email, req.cookies.password, function(err, user) {
+                        if (err) {
+                            // login fail
+                            result.errMsg = err.errMsg;
+                            res.clearCookie('email');
+                            res.clearCookie('password');
+                            return res.send(tutu.templates.login(result));
+                        }
+
+                        // set cookie for auto login
+                        var moment = require('moment');
+                        var expireDate = moment().add(7, 'days').toDate();
+                        res.cookie('email', user.email, { expires: expireDate });
+                        res.cookie('password', req.cookies.password, { expires: expireDate });
+                        req.session.user = user;
+                        if (req.originalUrl.indexOf('admin') != -1) {
+                            tutu.logger.debug('redirect to original', req.originalUrl);
+                            return res.redirect(req.originalUrl);
+                        }
+
+                        return res.redirect('/admin/index');
+                    });
+                } else {
+                    return res.redirect('/login');
                 }
-                return res.redirect('/login');
+            } else {
+                next();
             }
+        } else {
+            next();
         }
 
-        next();
     },
 
     login: function(req, res, next) {
@@ -44,61 +67,24 @@ module.exports = {
     doLogin: function(req, res, next) {
         var email = req.body.email;
         var pwd = req.body.password;
-
         var result = {};
 
-        if (_.isEmpty(email) || _.isEmpty(pwd)) {
-            result.errMsg = '用户名和密码不能为空';
-            res.send(tutu.templates.login(result));
-            return;
-        }
-
-        var si = {
-            email: email,
-        };
-
-        tutu.models.adminUser.find(si).all(function(err, userList) {
+        req.loginService.checkBackendLogin(email, pwd, function(err, user) {
             if (err) {
-                return next(err);
+                // login fail
+                result.errMsg = err.errMsg;
+                res.clearCookie('email');
+                res.clearCookie('password');
+                return res.send(tutu.templates.login(result));
             }
 
-            // pwd: tutu.helpers.encryptHelper.encrypt(pwd),
-
-            if (userList && userList.length === 1) {
-                // login success
-                var user = _.cloneDeep(userList[0]);
-                if (user.password == pwd || pwd == tutu.helpers.encryptHelper.decrypt(user.pwd)) {
-                    // set cookie for auto login
-                    var moment = require('moment');
-                    var expireDate = moment().add(7, 'days').toDate();
-                    res.cookie('email', email, { expires: expireDate });
-                    res.cookie('password', pwd, { expires: expireDate });
-
-                    // user.lastLoginString = moment(user.lastLogin).format('YYYY-MM-DD HH:mm:ss');
-                    userList[0].lastLogin = new Date();
-                    userList[0].save();
-
-                    user.pwd = null;
-                    delete user.pwd;
-                    req.session.user = user;
-                    tutu.logger.info('LOGIN', user.role.roleName, user.userId, user.email);
-
-                    if (req.originalUrl.indexOf('admin') != -1) {
-                        tutu.logger.log('redirect to original', req.originalUrl);
-                        return res.redirect(req.originalUrl);
-                    }
-
-                    return res.redirect('/admin/index');
-                } else {
-                    tutu.logger.info('LOGIN FAIL', user.email, user.pwd);
-                }
-            }
-
-            // login fail
-            result.errMsg = '用户名或密码错误';
-            res.clearCookie('email');
-            res.clearCookie('password');
-            res.send(tutu.templates.login(result));
+            // set cookie for auto login
+            var moment = require('moment');
+            var expireDate = moment().add(7, 'days').toDate();
+            res.cookie('email', user.email, { expires: expireDate });
+            res.cookie('password', pwd, { expires: expireDate });
+            req.session.user = user;
+            return res.redirect('/admin/index');
         });
     },
 

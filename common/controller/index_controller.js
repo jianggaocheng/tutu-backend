@@ -5,6 +5,8 @@ var _ = require('lodash');
 module.exports = {
     toAdmin: function(req, res, next) {
         res.redirect('/admin/index');
+        tutu.logger.debug('to admin');
+        next();
     },
 
     index: function(req, res, next) {

@@ -73,6 +73,18 @@ class TuTuApp {
             });
         }
 
+        // load services
+        var servicePath = path.join(this.options.appPath, 'service');
+        if (fs.existsSync(servicePath)) {
+            loadFileArray = fs.readdirSync(servicePath);
+            loadFileArray.forEach(function(filename) {
+                // prevent '.DStore' file in MAC os
+                if (path.extname(filename) == '.js') {
+                    tutu.services = Object.assign(tutu.services || {}, require(path.join(servicePath, filename)));
+                }
+            });
+        }
+
         // set public directory if exists
         if (fs.existsSync(path.join(this.options.appPath, 'public'))) {
             require(path.join(this.options.appPath, 'public'))(tutu.app);

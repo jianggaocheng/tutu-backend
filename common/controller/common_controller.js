@@ -19,7 +19,7 @@ module.exports = {
 
         // send ws message 
         var user = req.session.user;
-        if (user.greeting !== true) {
+        if (user && user.greeting !== true) {
             var toastData = {
                 title: '欢迎登陆 ' + user.name,
                 content: '上次登录: ' + moment(user.lastLogin).format('YYYY-MM-DD HH:mm:ss')
@@ -96,7 +96,9 @@ module.exports = {
             var parsedRequest = datatableParser(req.query);
 
             // Set where condition
-            var si = {};
+            var si = {
+                teamId: req.session.user.teamId,
+            };
 
             if (parsedRequest.search) {
                 si.or = [];
@@ -230,7 +232,7 @@ module.exports = {
 
 
         if (req.params.id) {
-            model.find(tutu.helpers.envHelper.genIDSearchInfo(req.params.id)).one(function(err, item) {
+            model.find(tutu.helpers.envHelper.genIDSearchInfo(req.params.id, req.session.user.teamId)).one(function(err, item) {
                 if (err) {
                     tutu.logger.error(err);
                     return res.json(err);
@@ -256,7 +258,7 @@ module.exports = {
         try {
             // Judge the operation (edit or create)
             if (req.params.id) {
-                model.find(tutu.helpers.envHelper.genIDSearchInfo(req.params.id)).one(function(err, originEntity) {
+                model.find(tutu.helpers.envHelper.genIDSearchInfo(req.params.id, req.session.user.teamId)).one(function(err, originEntity) {
                     if (err) {
                         tutu.logger.error(err);
                         return res.json({ errMsg: err[0].msg });
@@ -311,7 +313,7 @@ module.exports = {
         var id = req.body.id;
 
         var doDelete = function() {
-            var si = tutu.helpers.envHelper.genIDSearchInfo(id);
+            var si = tutu.helpers.envHelper.genIDSearchInfo(id, req.session.user.teamId);
             model.find(si).remove(function(err) {
                 if (err) {
                     return next(err);
