@@ -96,9 +96,11 @@ module.exports = {
             var parsedRequest = datatableParser(req.query);
 
             // Set where condition
-            var si = {
-                teamId: req.session.user.teamId,
-            };
+            var si = {};
+
+            if (req.session.user.teamId) {
+                si.teamId = req.session.user.teamId;
+            }
 
             if (parsedRequest.search) {
                 si.or = [];
@@ -145,7 +147,7 @@ module.exports = {
 
                         chainResult.all(function(err, list) {
                             if (err) {
-                                return callbacl(err);
+                                return callback(err);
                             }
                             // Format date
                             list = _.cloneDeep(list);
@@ -346,7 +348,7 @@ module.exports = {
      */
     baseRender: function(req, res, next) {
         var renderData = req.renderData ? req.renderData : {};
-        renderData.loginUser = req.session.user;
+        renderData.session = req.session;
 
         // Check template exist
         if (!(req.template || req.content)) {

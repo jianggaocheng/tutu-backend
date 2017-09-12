@@ -22,6 +22,7 @@ module.exports = {
                     req.loginService.checkBackendLogin(req.cookies.email, req.cookies.password, function(err, user) {
                         if (err) {
                             // login fail
+                            var result = {};
                             result.errMsg = err.errMsg;
                             res.clearCookie('email');
                             res.clearCookie('password');
@@ -34,6 +35,9 @@ module.exports = {
                         res.cookie('email', user.email, { expires: expireDate });
                         res.cookie('password', req.cookies.password, { expires: expireDate });
                         req.session.user = user;
+                        if (user.team) {
+                            req.session.team = user.team;
+                        }
                         if (req.originalUrl.indexOf('admin') != -1) {
                             tutu.logger.debug('redirect to original', req.originalUrl);
                             return res.redirect(req.originalUrl);
@@ -84,6 +88,11 @@ module.exports = {
             res.cookie('email', user.email, { expires: expireDate });
             res.cookie('password', pwd, { expires: expireDate });
             req.session.user = user;
+
+            if (user.team) {
+                req.session.team = user.team;
+            }
+
             return res.redirect('/admin/index');
         });
     },

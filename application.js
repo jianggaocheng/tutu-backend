@@ -46,12 +46,14 @@ class TuTuApp {
                 // prevent '.DStore' file in MAC os
                 if (path.extname(filename) == '.js') {
                     var job = require(path.join(schedulesPath, filename));
-                    var sheduledJob = schedule.scheduleJob(job.schedule.cron, job.task);
-                    tutu.schedules.push({
-                        name: filename,
-                        job: sheduledJob,
-                    });
-                    tutu.coreLogger.debug('Schedule job: ' + filename);
+                    if (!job.disable) {
+                        var sheduledJob = schedule.scheduleJob(job.schedule.cron, job.task);
+                        tutu.schedules.push({
+                            name: filename,
+                            job: sheduledJob,
+                        });
+                        tutu.coreLogger.debug('Schedule job: ' + filename);
+                    }
                 }
             });
         }

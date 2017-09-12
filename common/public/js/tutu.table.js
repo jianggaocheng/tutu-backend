@@ -146,7 +146,7 @@ $(document).ready(function() {
                     .DataTable(_.merge(defaultSettings, result));
                 tutu.table.autoRefresh = setInterval(function() {
                     tutu.table.clearPipeline();
-                    tutu.table.ajax.reload();
+                    tutu.table.draw(false);
                 }, 30000);
             },
             error: function() {
@@ -175,7 +175,7 @@ $(document).ready(function() {
                         if (result.code == 200) {
                             swal("操作成功!", null, "success");
                             tutu.table.clearPipeline();
-                            tutu.table.ajax.reload();
+                            tutu.table.draw(false);
                         } else {
                             swal("发生错误!", result.errMsg ? result.errMsg : null, "error");
                         }

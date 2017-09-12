@@ -84,7 +84,7 @@ $(function() {
                     swal("操作成功!", null, "success");
                     $('#createModal').modal('hide');
                     tutu.table.clearPipeline();
-                    tutu.table.ajax.reload();
+                    tutu.table.draw(false);
                 } else {
                     swal("发生错误!", result.errMsg ? result.errMsg : null, "error");
                 }

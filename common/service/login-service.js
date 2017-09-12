@@ -16,8 +16,8 @@ module.exports.loginService = {
 
         tutu.models.adminUser.find(si).all(function(dbError, userList) {
             if (dbError) {
-                tutu.logger.error(err);
-                return callback(err);
+                tutu.logger.error(dbError);
+                return callback(dbError);
             }
 
             if (userList && userList.length === 1) {
