@@ -10,7 +10,7 @@ module.exports = {
                 return callback(null, parentMenu);
             }
 
-            tutu.models.menu.find(tutu.helpers.envHelper.genIDSearchInfo(_.map(req.session.user.role.menus, 'id'))).all(function(err, allMenuOfUser) {
+            tutu.models.menu.all(function(err, allMenuOfUser) {
                 if (err) {
                     return tutu.logger.error(err);
                 }
